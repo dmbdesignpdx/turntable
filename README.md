@@ -1,4 +1,4 @@
-<img src="https://github.com/dmbdesignpdx/turntable/blob/master/img/turntable.jpg" alt="Turntable" width="100%" height="auto">
+![Turntable](https://github.com/dmbdesignpdx/turntable/blob/master/img/turntable.jpg)
 
 # Turntable
 
@@ -11,9 +11,9 @@
 <br>
 
 #### Features
-- Control the compiled CSS output
-- Enjoy custom mixins to increase productivity
-- Utilize just about every vendor prefix
+- Control vendor-prefix output
+- Utlize predefined rules and functions
+- Enjoy scripting with custom mixins 
 
 <br>
 
