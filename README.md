@@ -1,4 +1,4 @@
-![Turntable](https://github.com/dmbdesignpdx/turntable/blob/master/img/turntable.jpg)
+![Turntable](https://github.com/dmbdesignpdx/turntable/blob/master/img/turntable-new.jpg)
 
 # Turntable
 
