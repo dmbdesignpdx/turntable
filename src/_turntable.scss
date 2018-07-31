@@ -1,4 +1,4 @@
-/* Mixin' with Turntable v0.1.1 -- by Daniel Blake */
+/* Mixin' with Turntable v0.2.0 -- by Daniel Blake */
 
 // Create fresh stylesheets on the fly.
 
@@ -68,12 +68,22 @@ $ieversion: map-get($channel,ie);
          display: -webkit-#{$arg};
 
       }
-      display: $arg;
+		display: $arg;
    }
 }
 
 
 // CSS Grid
+
+// Display Grid
+
+@mixin grid($arg:null) {
+	$inline: if($arg, inline-, null);
+	@if $ieversion < 11 {
+		display: -ms-#{$inline}grid;
+	}
+	display: #{$inline}grid;
+}
 
 // 1. Grid Template Columns
 
@@ -173,6 +183,25 @@ $ieversion: map-get($channel,ie);
 
 
 // Flexbox:
+
+// Display Flex
+
+@mixin flex($arg:null) {
+	$inline: if($arg, inline-, null);
+	@if $ieversion < 11 {
+		display: -ms-#{$inline}flexbox;
+	}
+	@if $browseryear < 2014 {
+		display: -webkit-#{$inline}box;
+		display: -moz-#{$inline}box;
+	}
+	@if $browseryear < 2015 {
+		display: -webkit-#{$inline}flex;
+
+	}
+	display: #{$inline}flex;
+}
+
 
 // 1. Flex Direction
 
@@ -737,7 +766,6 @@ $ieversion: map-get($channel,ie);
 
 @mixin tap-highlight-color($arg) {
    -webkit-tap-highlight-color: $arg;
-   tap-highlight-color: $arg;
 }
 
 
@@ -751,7 +779,6 @@ $ieversion: map-get($channel,ie);
       -moz-osx-font-smoothing: auto;
    }
    -webkit-font-smoothing: $arg;
-   font-smoothing: $arg;
 }
 
 
@@ -962,7 +989,7 @@ $ieversion: map-get($channel,ie);
 // Touch Action
 
 @mixin touch-action($arg) {
-   @if ieversion < 11 {
+   @if $ieversion <= 11 {
       -ms-touch-action: $arg;
    }
    touch-action: $arg;
@@ -981,7 +1008,6 @@ $ieversion: map-get($channel,ie);
 
 @mixin text-stroke($arg) {
    -webkit-text-stroke: $arg;
-   text-stroke: $arg;
 }
 
 
@@ -1008,7 +1034,7 @@ $ieversion: map-get($channel,ie);
 // Image Rendering
 
 @mixin image-rendering($arg) {
-   @if $ieversion < 12 {
+   @if $ieversion <= 11 {
       @if $arg == auto {
          -ms-interpolation-mode: bicubic;
       }
@@ -1080,18 +1106,33 @@ $ieversion: map-get($channel,ie);
 
 // Viewport
 
-@mixin viewport {
-   @-ms-viewport {
-      @content;
-   }
+@mixin viewport($args...) {
+	$opera: false;
+	@each $key, $value in $args {
+		@if $key == orientation {
+			$opera: true;
+		}
+	}
 
-   @-o-viewport {
-      @content;
-   }
+	@-ms-viewport {
+		@each $key, $value in $args {
+			#{$key}: $value;
+		}
+	}
 
-   @viewport {
-      @content;
-   }
+	@if $opera == true {
+		@-o-viewport {
+			@each $key, $value in $args {
+				#{$key}: $value;
+			}
+		}
+	}
+
+	@viewport {
+		@each $key, $value in $args {
+			#{$key}: $value;
+		}
+	}
 }
 
 
@@ -1125,7 +1166,7 @@ $ieversion: map-get($channel,ie);
 	@if $browseryear < 2014 {
 		#{$prop}: -webkit-calc(#{$arg});
 	}
-	#{$prop}: -webkit-calc(#{$arg});
+	#{$prop}: calc(#{$arg});
 }
 
 
@@ -1134,7 +1175,7 @@ $ieversion: map-get($channel,ie);
 @mixin font-face($name, $src, $full:null) {
 	@font-face {
 		font-family: $name;
-		@if $ieversion < 12 and $full {
+		@if $ieversion <= 11 and $full {
 		src: url("#{$src}.eot");
 		}
 		@if $full {
@@ -1147,6 +1188,99 @@ $ieversion: map-get($channel,ie);
 		url("#{$src}.woff") format("woff");			
 		}	
 	}
+}
+
+
+// Scroll Snaping
+
+@mixin scroll-snap-align($args) {
+	$map: (
+		none: none,
+		start: 0,
+		end: 100%,
+		center: 50%
+	);
+	@if length($args) < 2 {
+		scroll-snap-coordinate: #{map-get($map, nth($args, 1))} #{map-get($map, nth($args, 1))};
+	} @else {
+		scroll-snap-coordinate: #{map-get($map, nth($args, 1))} #{map-get($map, nth($args, 2))};
+	}
+	scroll-snap-align: $args;
+}
+
+@mixin scroll-snap-padding($args) {
+	@if length($args) < 2 {
+		scroll-snap-destination: #{nth($args, 1)} #{nth($args, 1)};
+		scroll-snap-padding: #{nth($args, 1)} 0 0 #{nth($args, 1)};
+	} @else {
+		scroll-snap-destination: #{nth($args, 1)} #{nth($args, 2)};
+		scroll-snap-padding: #{nth($args, 1)} 0 0 #{nth($args, 2)};
+	}
+}
+
+
+// Cursor: Grab and Grabbing
+
+@mixin grab {
+	@if $browseryear <= 2018 {
+		cursor: -webkit-grab;
+	}
+	cursor: grab;
+}
+
+@mixin grabbing {
+	@if $browseryear <= 2018 {
+		cursor: -webkit-grabbing;
+	}
+	cursor: grabbing;
+}
+
+
+// Resize
+
+@mixin resize($arg) {
+	@if $browseryear < 2012 {
+		-moz-resize: $arg;
+	}
+	resize: $arg;
+}
+
+
+// Text Overflow
+
+@mixin text-overflow($arg) {
+	@if $browseryear < 2013 {
+		-o-text-overflow: $arg;
+	}
+	text-overflow: $arg;
+}
+
+
+// Border Image
+
+@mixin border-image($arg) {
+	@if $browseryear < 2016 {	
+		-o-border-image: $arg;
+		@if $browseryear < 2014 {
+			@if $browseryear < 2013 {
+				-moz-border-image: $arg;
+			}
+			-webkit-border-image: $arg;
+		}
+	}
+	border-image: $arg;
+}
+
+
+// Hyphens
+
+@mixin hyphens($arg) {
+	-ms-hyphens: $arg;
+	@if $browseryear < 2016 {
+		-moz-hyphens: $arg;
+	}
+	-webkit-hyphens: $arg;
+	hyphens: $arg;
 }
 
 
@@ -1460,21 +1594,37 @@ $ieversion: map-get($channel,ie);
 
 // Pseudo Element (Before)
 
-@mixin before {
-   &::before {
-      content: '';
-      @content;
-   }
+@mixin before($arg:null) {
+	@if $arg {
+		&::before {
+			display: $arg;
+			content: '';
+			@content;
+		}		
+	} @else {
+		&::before {
+			content: '';
+			@content;
+		}
+	}
 }
 
 
 // Pseudo Element (Before)
 
-@mixin after {
-   &::after {
-      content: '';
-      @content;
-   }
+@mixin after($arg:null) {
+	@if $arg {
+		&::after {
+			display: $arg;
+			content: '';
+			@content;
+		}		
+	} @else {
+		&::after {
+			content: '';
+			@content;
+		}
+	}
 }
 
 
@@ -1513,6 +1663,24 @@ $ieversion: map-get($channel,ie);
 		}
 	} 
 }
+
+
+// Padding with Auto (Work in Progress)
+
+@mixin padding($args...) {
+	@if length($args) == 2 {
+		@if nth($args, 1) == auto {
+			padding-left: nth($args, 2);
+			padding-right: nth($args, 2)
+		} @else {
+			padding-top: nth($args, 1);
+			padding-bottom: nth($args, 1)
+		}
+	}
+}
+
+
+
 
 
 
